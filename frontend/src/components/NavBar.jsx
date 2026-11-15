@@ -59,7 +59,11 @@ export default function NavBar() {
             {loading ? null : user ? (
               <>
                 <span className="navbar-greeting">Hi, {user.username}</span>
-                <button type="button" className="btn btn-secondary" onClick={handleLogout}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleLogout}
+                >
                   Log out
                 </button>
               </>

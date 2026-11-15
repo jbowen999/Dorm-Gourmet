@@ -7,7 +7,10 @@ import { EQUIPMENT } from "../constants/equipment.js";
 import "./HomePage.css";
 
 const STEPS = [
-  { title: "Pick your equipment", text: "Microwave, hot plate, mini-fridge, or nothing." },
+  {
+    title: "Pick your equipment",
+    text: "Microwave, hot plate, mini-fridge, or nothing.",
+  },
   { title: "Set time and budget", text: "Filter by max prep time and cost." },
   { title: "Check the reviews", text: "See if it worked for someone with your setup." },
 ];
@@ -37,7 +40,9 @@ export default function HomePage() {
   return (
     <div className="home">
       <section className="home-hero" aria-labelledby="home-title">
-        <h1 id="home-title">Real recipes for a microwave, a hot plate, or a mini-fridge.</h1>
+        <h1 id="home-title">
+          Real recipes for a microwave, a hot plate, or a mini-fridge.
+        </h1>
 
         <form className="home-search" role="search" onSubmit={handleSearch}>
           <label htmlFor="home-search-input" className="visually-hidden">

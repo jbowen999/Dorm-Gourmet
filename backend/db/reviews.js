@@ -64,7 +64,9 @@ export async function listReviews({
             { $skip: (safePage - 1) * safeLimit },
             { $limit: safeLimit },
           ],
-          stats: [{ $group: { _id: null, total: { $sum: 1 }, avg: { $avg: "$rating" } } }],
+          stats: [
+            { $group: { _id: null, total: { $sum: 1 }, avg: { $avg: "$rating" } } },
+          ],
         },
       },
     ])

@@ -1,7 +1,14 @@
 // TODO(Jerith): add login(username, password), register(...) and logout() here.
 // The current version only loads the logged-in user so NavBar and the review
 // pages can check `user`.
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import PropTypes from "prop-types";
 import { apiFetch } from "../api/client.js";
 
