@@ -6,6 +6,7 @@ import passport from "./auth/passport.js";
 import { connect } from "./db/connection.js";
 import { ensureUserIndexes } from "./db/users.js";
 import authRouter from "./routes/auth.js";
+import recipesRouter from "./routes/recipes.js";
 
 const PORT = 3000;
 
@@ -38,6 +39,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/recipes", recipesRouter);
 
 try {
   await connect();
