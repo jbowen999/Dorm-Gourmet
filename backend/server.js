@@ -4,9 +4,11 @@ import express from "express";
 import session from "express-session";
 import passport from "./auth/passport.js";
 import { connect } from "./db/connection.js";
+import { ensureReviewIndexes } from "./db/reviews.js";
 import { ensureUserIndexes } from "./db/users.js";
 import authRouter from "./routes/auth.js";
 import recipesRouter from "./routes/recipes.js";
+import reviewsRouter from "./routes/reviews.js";
 
 const PORT = 3000;
 
@@ -40,10 +42,11 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/recipes", recipesRouter);
+app.use("/api/reviews", reviewsRouter);
 
 try {
   await connect();
-  await ensureUserIndexes();
+  await Promise.all([ensureUserIndexes(), ensureReviewIndexes()]);
   app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
   });
