@@ -1,15 +1,19 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 import HomePage from "./pages/HomePage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import NotFoundPage from "./pages/NotFoundPage.jsx";
-import RecipeDetailPage from "./pages/RecipeDetailPage.jsx";
-import RecipeFormPage from "./pages/RecipeFormPage.jsx";
-import RecipesPage from "./pages/RecipesPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import RecipeDetail from "./pages/RecipeDetail.jsx";
+import RecipeForm from "./pages/RecipeForm.jsx";
+import RecipeList from "./pages/RecipeList.jsx";
+import Register from "./pages/Register.jsx";
 import ReviewDetailPage from "./pages/ReviewDetailPage.jsx";
 import ReviewFormPage from "./pages/ReviewFormPage.jsx";
 import ReviewsPage from "./pages/ReviewsPage.jsx";
+
+/** Wraps a page so logged-out users are sent to /login and brought back after. */
+const protect = (page) => <RequireAuth>{page}</RequireAuth>;
 
 export default function App() {
   return (
@@ -17,20 +21,21 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
 
-        <Route path="recipes" element={<RecipesPage />} />
-        <Route path="recipes/new" element={<RecipeFormPage />} />
-        <Route path="recipes/:id" element={<RecipeDetailPage />} />
-        <Route path="recipes/:id/edit" element={<RecipeFormPage />} />
+        {/* Recipes (Jerith) */}
+        <Route path="recipes" element={<RecipeList />} />
+        <Route path="recipes/new" element={protect(<RecipeForm />)} />
+        <Route path="recipes/:id" element={<RecipeDetail />} />
+        <Route path="recipes/:id/edit" element={protect(<RecipeForm />)} />
 
+        {/* Reviews (Julian) */}
         <Route path="reviews" element={<ReviewsPage />} />
-        <Route path="reviews/new" element={<ReviewFormPage />} />
+        <Route path="reviews/new" element={protect(<ReviewFormPage />)} />
         <Route path="reviews/:id" element={<ReviewDetailPage />} />
-        <Route path="reviews/:id/edit" element={<ReviewFormPage />} />
+        <Route path="reviews/:id/edit" element={protect(<ReviewFormPage />)} />
 
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

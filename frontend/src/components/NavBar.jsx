@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useAuth } from "../AuthContext.jsx";
 import "./NavBar.css";
 
 const LINKS = [
@@ -18,12 +18,9 @@ export default function NavBar() {
 
   async function handleLogout() {
     closeMenu();
-    try {
-      await logout();
-      navigate("/");
-    } catch {
-      // Logout endpoint not ready yet (Jerith); nothing else to do.
-    }
+    // logout() clears the user even if the request fails.
+    await logout().catch(() => {});
+    navigate("/");
   }
 
   return (
@@ -64,8 +61,13 @@ export default function NavBar() {
           </ul>
 
           <div className="navbar-account">
+            {/* Nothing auth-specific until the session check finishes, so
+                logged-in users don't see a flash of Log in / Sign up. */}
             {loading ? null : user ? (
               <>
+                <Link to="/recipes/new" className="btn" onClick={closeMenu}>
+                  Post a Recipe
+                </Link>
                 <span className="navbar-greeting">Hi, {user.username}</span>
                 <button
                   type="button"

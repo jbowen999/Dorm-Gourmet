@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiFetch } from "../api/client.js";
+import { api } from "../api.js";
 import EquipmentBadge from "../components/EquipmentBadge.jsx";
 import StarRating from "../components/StarRating.jsx";
 import { EQUIPMENT } from "../constants/equipment.js";
@@ -26,7 +26,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch("/reviews?limit=3&sort=newest", { signal: controller.signal })
+    api("/api/reviews?limit=3&sort=newest", { signal: controller.signal })
       .then((data) => setRecent(data.reviews))
       .catch((err) => {
         if (err.name !== "AbortError") setRecentError(true);

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { apiFetch, toQueryString } from "../api/client.js";
+import { api } from "../api.js";
 import Pagination from "../components/Pagination.jsx";
 import ReviewFilters from "../components/ReviewFilters.jsx";
 import ReviewList from "../components/ReviewList.jsx";
 import { EQUIPMENT_VALUES } from "../constants/equipment.js";
 import { pluralize } from "../utils/format.js";
+import { toQueryString } from "../utils/query.js";
 import "./ReviewsPage.css";
 
 const PAGE_SIZE = 10;
@@ -58,7 +59,7 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch(`/reviews${requestQs}`, { signal: controller.signal })
+    api(`/api/reviews${requestQs}`, { signal: controller.signal })
       .then((data) => setResult({ qs: requestQs, data, error: null }))
       .catch((err) => {
         if (err.name === "AbortError") return;
