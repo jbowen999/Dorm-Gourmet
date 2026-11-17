@@ -2,6 +2,11 @@ import { ObjectId } from "mongodb";
 import { getDb } from "./connection.js";
 
 export const EQUIPMENT = ["microwave", "hot-plate", "mini-fridge", "no-cook"];
+export const DEFAULT_PAGE_LIMIT = 20;
+export const MAX_PAGE_LIMIT = 100;
+
+// _id breaks ties between equal createdAt values so pages never overlap.
+const NEWEST_FIRST = { createdAt: -1, _id: -1 };
 
 function recipes() {
   return getDb().collection("recipes");
@@ -16,12 +21,16 @@ function escapeRegex(text) {
 }
 
 // Runs a match through the owner join. Only the owner's username is pulled
-// from users, so password hashes never enter the pipeline.
-function findWithOwner(match, sort = { createdAt: -1 }) {
+// from users, so password hashes never enter the pipeline. Paging happens
+// before the join so only the returned page is looked up.
+function findWithOwner(match, { skip = 0, limit } = {}) {
+  const page = [{ $skip: skip }];
+  if (limit !== undefined) page.push({ $limit: limit });
   return recipes()
     .aggregate([
       { $match: match },
-      { $sort: sort },
+      { $sort: NEWEST_FIRST },
+      ...page,
       {
         $lookup: {
           from: "users",
@@ -59,11 +68,15 @@ export async function getRecipe(id) {
   return recipe ?? null;
 }
 
+// page is 1-based. Returns the page of recipes plus the total number of
+// recipes matching the filters across all pages.
 export async function listRecipes({
   equipment,
   maxPrepTime,
   maxCost,
   keyword,
+  page = 1,
+  limit = DEFAULT_PAGE_LIMIT,
 } = {}) {
   const match = {};
   if (equipment) match.equipment = equipment;
@@ -75,7 +88,11 @@ export async function listRecipes({
     // Regex on an array field matches if any ingredient matches.
     match.$or = [{ title: pattern }, { ingredients: pattern }];
   }
-  return findWithOwner(match);
+  const [results, totalCount] = await Promise.all([
+    findWithOwner(match, { skip: (page - 1) * limit, limit }),
+    recipes().countDocuments(match),
+  ]);
+  return { recipes: results, totalCount };
 }
 
 // Returns the updated recipe, or null if no recipe has that id.

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
+  DEFAULT_PAGE_LIMIT,
   EQUIPMENT,
+  MAX_PAGE_LIMIT,
   createRecipe,
   deleteRecipe,
   getRecipe,
@@ -79,6 +81,13 @@ function parseOptionalNumber(value) {
   return Number.isFinite(number) ? number : NaN;
 }
 
+// Returns the default when absent, NaN when not a positive integer.
+function parsePositiveInt(value, defaultValue) {
+  if (value === undefined || value === "") return defaultValue;
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? number : NaN;
+}
+
 // Loads the recipe and checks the logged-in user owns it; sends 404/403 otherwise.
 async function loadOwnedRecipe(req, res) {
   const recipe = await getRecipe(req.params.id);
@@ -109,13 +118,30 @@ router.get("/", async (req, res) => {
       .json({ error: "maxPrepTime and maxCost must be numbers" });
   }
 
-  const results = await listRecipes({
+  const page = parsePositiveInt(req.query.page, 1);
+  const requestedLimit = parsePositiveInt(req.query.limit, DEFAULT_PAGE_LIMIT);
+  if (Number.isNaN(page) || Number.isNaN(requestedLimit)) {
+    return res
+      .status(400)
+      .json({ error: "page and limit must be positive integers" });
+  }
+  const limit = Math.min(requestedLimit, MAX_PAGE_LIMIT);
+
+  const { recipes, totalCount } = await listRecipes({
     equipment,
     maxPrepTime,
     maxCost,
     keyword: typeof keyword === "string" ? keyword.trim() : undefined,
+    page,
+    limit,
   });
-  res.json(results.map(toPublicRecipe));
+  res.json({
+    recipes: recipes.map(toPublicRecipe),
+    totalCount,
+    page,
+    limit,
+    totalPages: Math.ceil(totalCount / limit),
+  });
 });
 
 router.get("/:id", async (req, res) => {
