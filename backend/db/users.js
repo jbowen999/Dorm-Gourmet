@@ -13,9 +13,15 @@ export async function ensureUserIndexes() {
   await users().createIndex({ username: 1 }, { unique: true });
 }
 
-export async function createUser(username, password) {
+// extraFields (e.g. { seeded: true }) can't override username or passwordHash.
+export async function createUser(username, password, extraFields = {}) {
   const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
-  const user = { username, passwordHash, createdAt: new Date() };
+  const user = {
+    ...extraFields,
+    username,
+    passwordHash,
+    createdAt: new Date(),
+  };
   const result = await users().insertOne(user);
   return { _id: result.insertedId, ...user };
 }

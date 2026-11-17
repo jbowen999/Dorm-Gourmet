@@ -25,3 +25,9 @@ export function getDb() {
   }
   return db;
 }
+
+export async function close() {
+  await client?.close();
+  client = undefined;
+  db = undefined;
+}
