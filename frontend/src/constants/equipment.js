@@ -1,4 +1,4 @@
-// Keep values in sync with backend/constants.js.
+// Keep values in sync with EQUIPMENT in backend/db/recipes.js.
 export const EQUIPMENT = [
   { value: "microwave", label: "Microwave", icon: "📡" },
   { value: "hot-plate", label: "Hot plate", icon: "🔥" },
