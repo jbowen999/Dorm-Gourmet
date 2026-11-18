@@ -13,6 +13,7 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
   if (!res.ok) {
     let message = `Request failed (${res.status})`
     let fieldErrors = {}
+    let details = []
     try {
       const data = await res.json()
       if (data?.error) message = data.error
@@ -20,12 +21,15 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
       if (data?.errors && typeof data.errors === 'object') {
         fieldErrors = data.errors
       }
+      // List of validation messages, e.g. ["title is required"] from /api/recipes.
+      if (Array.isArray(data?.details)) details = data.details
     } catch {
       // Non-JSON error body; keep the generic message.
     }
     const err = new Error(message)
     err.status = res.status
     err.fieldErrors = fieldErrors
+    err.details = details
     throw err
   }
 
