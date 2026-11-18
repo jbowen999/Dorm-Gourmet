@@ -10,6 +10,13 @@ import "./RecipeList.css";
 
 const KEYWORD_DEBOUNCE_MS = 300;
 
+// Values match RECIPE_SORTS in backend/db/recipes.js.
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "cheapest", label: "Cheapest" },
+  { value: "fastest", label: "Fastest" },
+];
+
 /**
  * Reads filters from the URL so views can be bookmarked, shared and navigated
  * back to. The search box uses `q` to match the home page and reviews page.
@@ -17,11 +24,13 @@ const KEYWORD_DEBOUNCE_MS = 300;
 function readParams(searchParams) {
   const equipment = searchParams.get("equipment");
   const page = Number(searchParams.get("page"));
+  const sort = searchParams.get("sort");
   return {
     q: searchParams.get("q") ?? "",
     equipment: EQUIPMENT_VALUES.includes(equipment) ? equipment : "",
     maxPrepTime: searchParams.get("maxPrepTime") ?? "",
     maxCost: searchParams.get("maxCost") ?? "",
+    sort: SORT_OPTIONS.some((o) => o.value === sort) ? sort : "newest",
     page: Number.isInteger(page) && page > 1 ? page : 1,
   };
 }
@@ -33,13 +42,14 @@ function formatCost(cost) {
 export default function RecipeList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const params = readParams(searchParams);
-  const { q, equipment, maxPrepTime, maxCost, page } = params;
+  const { q, equipment, maxPrepTime, maxCost, sort, page } = params;
 
   const requestQs = toQueryString({
     keyword: q,
     equipment,
     maxPrepTime,
     maxCost,
+    sort,
     page,
   });
 
@@ -88,6 +98,7 @@ export default function RecipeList() {
         equipment: next.equipment,
         maxPrepTime: next.maxPrepTime,
         maxCost: next.maxCost,
+        sort: next.sort === "newest" ? undefined : next.sort,
         page: next.page > 1 ? next.page : undefined,
       }).slice(1),
       { replace: resetPage },
@@ -187,9 +198,24 @@ export default function RecipeList() {
         </aside>
 
         <section className="recipe-list-results" aria-label="Results">
-          <p className="recipe-list-count" aria-live="polite">
-            {data && !error && pluralize(data.totalCount, "recipe")}
-          </p>
+          <div className="recipe-list-toolbar">
+            <p className="recipe-list-count" aria-live="polite">
+              {data && !error && pluralize(data.totalCount, "recipe")}
+            </p>
+            <label className="recipe-list-sort">
+              Sort by{" "}
+              <select
+                value={sort}
+                onChange={(e) => updateParams({ sort: e.target.value })}
+              >
+                {SORT_OPTIONS.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           {error ? (
             <p className="recipe-list-error" role="alert">

@@ -5,8 +5,14 @@ export const EQUIPMENT = ["microwave", "hot-plate", "mini-fridge", "no-cook"];
 export const DEFAULT_PAGE_LIMIT = 20;
 export const MAX_PAGE_LIMIT = 100;
 
-// _id breaks ties between equal createdAt values so pages never overlap.
-const NEWEST_FIRST = { createdAt: -1, _id: -1 };
+// Sort orders for listRecipes. Each ends with newest-first, and _id breaks
+// ties between equal createdAt values so pages never overlap. costMissing is
+// computed in findWithOwner so recipes without a cost sort after priced ones.
+export const RECIPE_SORTS = {
+  newest: { createdAt: -1, _id: -1 },
+  cheapest: { costMissing: 1, cost: 1, createdAt: -1, _id: -1 },
+  fastest: { prepTime: 1, createdAt: -1, _id: -1 },
+};
 
 function recipes() {
   return getDb().collection("recipes");
@@ -23,13 +29,19 @@ function escapeRegex(text) {
 // Runs a match through the owner join. Only the owner's username is pulled
 // from users, so password hashes never enter the pipeline. Paging happens
 // before the join so only the returned page is looked up.
-function findWithOwner(match, { skip = 0, limit } = {}) {
+function findWithOwner(match, { skip = 0, limit, sort = "newest" } = {}) {
   const page = [{ $skip: skip }];
   if (limit !== undefined) page.push({ $limit: limit });
   return recipes()
     .aggregate([
       { $match: match },
-      { $sort: NEWEST_FIRST },
+      // Ascending sorts put null first in MongoDB, so flag missing costs.
+      {
+        $addFields: {
+          costMissing: { $eq: [{ $ifNull: ["$cost", null] }, null] },
+        },
+      },
+      { $sort: RECIPE_SORTS[sort] },
       ...page,
       {
         $lookup: {
@@ -45,7 +57,7 @@ function findWithOwner(match, { skip = 0, limit } = {}) {
           ownerUsername: { $ifNull: [{ $first: "$owner.username" }, null] },
         },
       },
-      { $project: { owner: 0 } },
+      { $project: { owner: 0, costMissing: 0 } },
     ])
     .toArray();
 }
@@ -68,8 +80,9 @@ export async function getRecipe(id) {
   return recipe ?? null;
 }
 
-// page is 1-based. Returns the page of recipes plus the total number of
-// recipes matching the filters across all pages.
+// page is 1-based and sort is a RECIPE_SORTS key. Returns the page of
+// recipes plus the total number of recipes matching the filters across all
+// pages.
 export async function listRecipes({
   equipment,
   maxPrepTime,
@@ -77,6 +90,7 @@ export async function listRecipes({
   keyword,
   page = 1,
   limit = DEFAULT_PAGE_LIMIT,
+  sort = "newest",
 } = {}) {
   const match = {};
   if (equipment) match.equipment = equipment;
@@ -89,7 +103,7 @@ export async function listRecipes({
     match.$or = [{ title: pattern }, { ingredients: pattern }];
   }
   const [results, totalCount] = await Promise.all([
-    findWithOwner(match, { skip: (page - 1) * limit, limit }),
+    findWithOwner(match, { skip: (page - 1) * limit, limit, sort }),
     recipes().countDocuments(match),
   ]);
   return { recipes: results, totalCount };

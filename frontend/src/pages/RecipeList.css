@@ -50,9 +50,24 @@
   gap: 1rem;
 }
 
+.recipe-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
 .recipe-list-count {
   margin: 0;
   color: var(--color-muted);
+}
+
+.recipe-list-sort select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
 }
 
 .recipe-list-loading {
