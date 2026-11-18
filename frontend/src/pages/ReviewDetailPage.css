@@ -1,0 +1,112 @@
+.review-detail {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 46rem;
+}
+
+.review-detail-back {
+  justify-self: start;
+  text-decoration: none;
+}
+
+.review-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.review-detail-eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.review-detail-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+}
+
+.review-detail-removed {
+  margin: 0.5rem 0 0;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.review-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.review-detail-confirm {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.review-detail-confirm p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.review-detail-rating {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+}
+
+.review-detail-rating > span:last-child {
+  color: var(--color-muted);
+  font-size: 1rem;
+}
+
+.review-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.review-detail-meta dt {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.review-detail-meta dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0;
+}
+
+.review-detail-comment {
+  margin: 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 4px solid var(--color-accent);
+  font-size: 1.125rem;
+  white-space: pre-line;
+}
+
+.review-detail-comment p {
+  margin: 0;
+}
+
+.review-detail-error {
+  padding: 2rem 1rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  text-align: center;
+}
