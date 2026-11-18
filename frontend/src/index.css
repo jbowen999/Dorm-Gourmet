@@ -1,88 +1,98 @@
+/* Global tokens and base styles. Component styles live next to each component. */
 :root {
-  --bg: #ffffff;
-  --text: #1f2328;
-  --muted: #59636e;
-  --border: #d1d9e0;
-  --accent: #c2410c;
-  --error: #b42318;
-  --nav-bg: #fff7ed;
+  --color-bg: #fbf8f3;
+  --color-surface: #ffffff;
+  --color-text: #1f1a17;
+  --color-muted: #5f5650;
+  --color-border: #e4dcd2;
+  --color-accent: #b4441c;
+  --color-accent-hover: #93360f;
+  --color-accent-text: #ffffff;
+  --color-star: #a86400;
+  --color-danger: #b42318;
+  --color-focus: #1f5fbf;
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
+  /* Short aliases used by the auth form styles below. */
+  --bg: var(--color-bg);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --border: var(--color-border);
+  --accent: var(--color-accent);
+  --error: var(--color-danger);
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
+  --content-width: 1100px;
+
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16181d;
-    --text: #e6e8eb;
-    --muted: #9aa4af;
-    --border: #3a3f47;
-    --accent: #fb923c;
-    --error: #f97066;
-    --nav-bg: #1f2228;
+    --color-bg: #16181d;
+    --color-surface: #1f2228;
+    --color-text: #e6e8eb;
+    --color-muted: #9aa4af;
+    --color-border: #3a3f47;
+    --color-accent: #fb923c;
+    --color-accent-hover: #fdba74;
+    --color-accent-text: #16181d;
+    --color-star: #fbbf24;
+    --color-danger: #f97066;
+    --color-focus: #60a5fa;
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 2px 8px rgb(0 0 0 / 30%);
   }
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
 }
 
 a {
-  color: var(--accent);
+  color: var(--color-accent);
 }
 
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--nav-bg);
-  border-bottom: 1px solid var(--border);
+a:hover {
+  color: var(--color-accent-hover);
 }
 
-.brand {
-  font-weight: 700;
-  font-size: 1.15rem;
-  text-decoration: none;
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
-.nav nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-}
-
-.nav nav a {
-  color: var(--text);
-  text-decoration: none;
-}
-
-.nav nav a.active {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.username {
-  color: var(--muted);
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
 }
 
 button {
-  font: inherit;
   padding: 6px 14px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--color-surface);
   cursor: pointer;
 }
 
@@ -91,12 +101,53 @@ button:disabled {
   cursor: default;
 }
 
-main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 24px 16px;
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  text-decoration: none;
+  cursor: pointer;
 }
 
+.btn:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-accent-text);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg);
+  color: var(--color-accent-hover);
+}
+
+.btn-danger {
+  border-color: var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.btn-danger:hover {
+  background: var(--color-danger);
+  color: var(--color-surface);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Login / register (AuthForm) */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -111,12 +162,10 @@ main {
 }
 
 .auth-form input {
-  font: inherit;
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--color-surface);
 }
 
 .error {

@@ -9,7 +9,8 @@
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "seed:reviews": "node seedReviews.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

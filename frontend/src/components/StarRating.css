@@ -1,0 +1,9 @@
+.star-rating {
+  color: var(--color-star);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.star-rating-empty {
+  color: var(--color-muted);
+}
