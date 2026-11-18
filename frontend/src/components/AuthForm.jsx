@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import './AuthForm.css'
 
 // Shared username/password form for the login and register pages.
 export default function AuthForm({ title, submitLabel, onSubmit }) {

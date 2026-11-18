@@ -12,14 +12,6 @@
   --color-danger: #b42318;
   --color-focus: #1f5fbf;
 
-  /* Short aliases used by the auth form styles below. */
-  --bg: var(--color-bg);
-  --text: var(--color-text);
-  --muted: var(--color-muted);
-  --border: var(--color-border);
-  --accent: var(--color-accent);
-  --error: var(--color-danger);
-
   --radius: 10px;
   --shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
   --content-width: 1100px;
@@ -147,36 +139,12 @@ button:disabled {
   white-space: nowrap;
 }
 
-/* Login / register (AuthForm) */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 360px;
-}
-
-.auth-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.auth-form input {
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--color-surface);
-}
-
+/* Shared status messages used across pages. */
 .error {
-  color: var(--error);
+  color: var(--color-danger);
   margin: 0;
 }
 
-.auth-switch {
-  color: var(--muted);
-}
-
 .loading {
-  color: var(--muted);
+  color: var(--color-muted);
 }
