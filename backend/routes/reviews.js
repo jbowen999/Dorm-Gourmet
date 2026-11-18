@@ -73,7 +73,7 @@ router.get("/", async (req, res) => {
     minRating: rating && rating <= 5 ? rating : undefined,
     page: toPositiveInt(page, 1),
     limit: toPositiveInt(limit, undefined),
-    sort: sort in REVIEW_SORTS ? sort : "newest",
+    sort: Object.hasOwn(REVIEW_SORTS, sort) ? sort : "newest",
   });
   res.json(result);
 });
