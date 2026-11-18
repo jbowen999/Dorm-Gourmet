@@ -3,6 +3,7 @@ import {
   DEFAULT_PAGE_LIMIT,
   EQUIPMENT,
   MAX_PAGE_LIMIT,
+  RECIPE_SORTS,
   createRecipe,
   deleteRecipe,
   getRecipe,
@@ -127,6 +128,14 @@ router.get("/", async (req, res) => {
   }
   const limit = Math.min(requestedLimit, MAX_PAGE_LIMIT);
 
+  // hasOwn rather than `in`, so names like "toString" aren't accepted.
+  const sort = req.query.sort || "newest";
+  if (!Object.hasOwn(RECIPE_SORTS, sort)) {
+    return res.status(400).json({
+      error: `sort must be one of: ${Object.keys(RECIPE_SORTS).join(", ")}`,
+    });
+  }
+
   const { recipes, totalCount } = await listRecipes({
     equipment,
     maxPrepTime,
@@ -134,6 +143,7 @@ router.get("/", async (req, res) => {
     keyword: typeof keyword === "string" ? keyword.trim() : undefined,
     page,
     limit,
+    sort,
   });
   res.json({
     recipes: recipes.map(toPublicRecipe),
