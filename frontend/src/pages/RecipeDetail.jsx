@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api.js";
 import { useAuth } from "../AuthContext.jsx";
 import EquipmentBadge from "../components/EquipmentBadge.jsx";
+import RecipeReviews from "../components/RecipeReviews.jsx";
 import { formatDate } from "../utils/format.js";
 import "./RecipeDetail.css";
 
@@ -202,6 +203,8 @@ export default function RecipeDetail() {
           ))}
         </ol>
       </section>
+
+      <RecipeReviews recipeId={id} />
     </article>
   );
 }
