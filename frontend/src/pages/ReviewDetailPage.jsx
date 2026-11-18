@@ -207,6 +207,15 @@ export default function ReviewDetailPage() {
       <blockquote className="review-detail-comment">
         <p>{review.comment}</p>
       </blockquote>
+
+      {review.recipeExists && !isOwner && (
+        <p className="review-detail-cta">
+          Made this too?{" "}
+          <Link to={`/reviews/new?recipeId=${review.recipeId}`}>
+            Write your own review
+          </Link>
+        </p>
+      )}
     </article>
   );
 }

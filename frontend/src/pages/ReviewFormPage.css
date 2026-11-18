@@ -1,0 +1,36 @@
+.review-form-page {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 46rem;
+}
+
+.review-form-page-back {
+  justify-self: start;
+  text-decoration: none;
+}
+
+.review-form-page header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.review-form-page-eyebrow {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.review-form-page-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+}
+
+.review-form-page-error {
+  padding: 2rem 1rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  text-align: center;
+}

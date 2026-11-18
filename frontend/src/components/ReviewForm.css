@@ -1,0 +1,128 @@
+.review-form {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.review-form-alert {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+}
+
+.review-form-group {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.review-form-group legend,
+.review-form-label {
+  margin-bottom: 0.25rem;
+  padding: 0;
+  font-weight: 600;
+}
+
+.review-form-hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.review-form-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+/* Star rating: real radio inputs, visually replaced by stars. */
+.review-form-stars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.review-form-star {
+  cursor: pointer;
+}
+
+.review-form-star-icon {
+  display: inline-block;
+  padding: 0 0.1rem;
+  border-radius: 4px;
+  color: var(--color-border);
+  font-size: 2rem;
+  line-height: 1;
+  transition: transform 0.1s;
+}
+
+.review-form-star-icon.is-filled {
+  color: var(--color-star);
+}
+
+.review-form-star:hover .review-form-star-icon {
+  transform: scale(1.15);
+}
+
+.review-form-star input:focus-visible + .review-form-star-icon {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.review-form-star-text {
+  margin-left: 0.75rem;
+  color: var(--color-muted);
+}
+
+.review-form-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.review-form-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.review-form-option input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  resize: vertical;
+}
+
+.review-form textarea[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.review-form-count {
+  justify-self: end;
+}
+
+.review-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

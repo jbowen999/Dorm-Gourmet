@@ -16,7 +16,7 @@ Recipes for dorm-kitchen cooking: a microwave, a hot plate, a mini-fridge, or no
 
 ## Links
 
-- **Live site:** TODO
+- **Live site:** https://dorm-gourmet.onrender.com (free tier: the first visit after ~15 idle minutes can take up to a minute to load)
 - **Demo video:** TODO
 - **Slides:** TODO
 - **Design document:** [docs/DESIGN.md](docs/DESIGN.md)

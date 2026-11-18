@@ -1,0 +1,133 @@
+.recipe-list-title {
+  margin: 0 0 1.25rem;
+}
+
+.recipe-list-body {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.recipe-filters {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.recipe-filters-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.recipe-filters-field {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.recipe-filters-field input,
+.recipe-filters-field select {
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font-weight: 400;
+}
+
+.recipe-filters button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.recipe-list-results {
+  display: grid;
+  gap: 1rem;
+}
+
+.recipe-list-count {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.recipe-list-loading {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.recipe-list-status,
+.recipe-list-error {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.recipe-list-error {
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+}
+
+.recipe-cards {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.recipe-card:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.recipe-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.recipe-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.recipe-card-author {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 760px) {
+  .recipe-list-body {
+    grid-template-columns: 1fr;
+  }
+
+  .recipe-filters {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+
+  .recipe-filters-title,
+  .recipe-filters button {
+    grid-column: 1 / -1;
+  }
+}

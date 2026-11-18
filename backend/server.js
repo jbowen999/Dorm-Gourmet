@@ -1,4 +1,6 @@
 import "dotenv/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import MongoStore from "connect-mongo";
 import express from "express";
 import session from "express-session";
@@ -10,9 +12,23 @@ import authRouter from "./routes/auth.js";
 import recipesRouter from "./routes/recipes.js";
 import reviewsRouter from "./routes/reviews.js";
 
-const PORT = 3000;
+// Render (and most hosts) assign the port through the PORT env var.
+const PORT = Number(process.env.PORT) || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+// Built React app (npm run build in frontend/).
+const distDir = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "frontend",
+  "dist",
+);
 
 const app = express();
+
+// Render terminates HTTPS at its proxy and forwards plain HTTP. Trusting the
+// proxy lets Express see the original https request, which express-session
+// requires before it will set the `secure` cookie below.
+if (isProduction) app.set("trust proxy", 1);
 
 app.use(express.json());
 
@@ -29,7 +45,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
     },
   }),
 );
@@ -43,6 +59,15 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/reviews", reviewsRouter);
+// Unknown API paths get JSON, not the React app.
+app.use("/api", (_req, res) => res.status(404).json({ error: "Not found" }));
+
+// Serve the React app. Any other path returns index.html so React Router
+// handles it, which keeps a page refresh on e.g. /reviews/123 working.
+app.use(express.static(distDir));
+app.get("/{*splat}", (_req, res) => {
+  res.sendFile(path.join(distDir, "index.html"));
+});
 
 try {
   await connect();
