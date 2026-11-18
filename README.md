@@ -11,7 +11,7 @@ Recipes for dorm-kitchen cooking: a microwave, a hot plate, a mini-fridge, or no
 
 ## Class
 
-[CS5610 Web Development, Northeastern University](TODO-class-link), taught by Prof. John Alexis Guerra Gómez
+[CS5610 Web Development, Northeastern University](https://northeastern.instructure.com/courses/261032), taught by Prof. John Alexis Guerra Gómez
 
 ## Links
 
