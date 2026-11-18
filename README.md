@@ -2,8 +2,7 @@
 
 Recipes for dorm-kitchen cooking: a microwave, a hot plate, a mini-fridge, or nothing at all.
 
-![Dorm Gourmet screenshot](docs/screenshot.png)
-<!-- TODO: add docs/screenshot.png once the UI is built -->
+![Dorm Gourmet screenshot](docs/mockups/home.png)
 
 ## Authors
 

@@ -92,9 +92,13 @@ Anyone can search, filter, and read posts without logging in. Registered users c
 
 ## 4. Design Mockups
 
-Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow screens, the filter sidebar collapses above the results list.
+Each screen shows a screenshot of the implemented page on the live site (`docs/mockups/`, captured at 1280px wide in light mode), followed by the original low-fidelity wireframe it was built from. Layouts are responsive: on narrow screens, the filter sidebar collapses above the results list.
 
 ### 4.1 Shared Navigation (all pages)
+
+The implemented navigation bar appears at the top of every screenshot below (logged out, and logged in on the recipe form).
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -104,6 +108,10 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 ```
 
 ### 4.2 Home Page
+
+![Home page](mockups/home.png)
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -131,6 +139,10 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 
 ### 4.3 Recipe Search / List (`/recipes`)
 
+![Recipe list with filter sidebar and sort](mockups/recipe-list.png)
+
+Original wireframe:
+
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │  NAV                                                                 │
@@ -154,6 +166,10 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 ```
 
 ### 4.4 Recipe Detail (`/recipes/:id`)
+
+![Recipe detail with reviews below](mockups/recipe-detail.png)
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -186,6 +202,10 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 ```
 
 ### 4.5 Review Search / List (`/reviews`)
+
+![Review list with equipment and rating filters](mockups/reviews.png)
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -228,6 +248,10 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 ```
 
 ### 4.7 Recipe Form (`/recipes/new`, `/recipes/:id/edit`)
+
+![Recipe form (logged in)](mockups/recipe-form.png)
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -274,6 +298,11 @@ Low-fidelity wireframes for each main screen. Layouts are responsive: on narrow 
 ```
 
 ### 4.9 Log In / Sign Up (`/login`, `/register`)
+
+![Log in page](mockups/login.png)
+![Register page](mockups/register.png)
+
+Original wireframe:
 
 ```
 ┌──────────────────────────────────────┐
