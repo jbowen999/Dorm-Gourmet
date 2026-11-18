@@ -15,11 +15,9 @@ router.post("/register", async (req, res, next) => {
     return res.status(400).json({ error: "Username is required" });
   }
   if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
-    return res
-      .status(400)
-      .json({
-        error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
-      });
+    return res.status(400).json({
+      error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+    });
   }
   if (await findUserByUsername(username)) {
     return res.status(409).json({ error: "Username is already taken" });

@@ -15,7 +15,7 @@ export default function Layout() {
       <footer className="layout-footer">
         <p>
           Dorm Gourmet · CS5610 Web Development ·{" "}
-          <a href="https://github.com/" rel="noreferrer">
+          <a href="https://github.com/jbowen999/Dorm-Gourmet" rel="noreferrer">
             Source on GitHub
           </a>
         </p>

@@ -230,6 +230,11 @@ Original wireframe:
 
 ### 4.6 Review Detail (`/reviews/:id`)
 
+<!-- TODO: save a 1280px-wide light-mode screenshot as docs/mockups/review-detail.png, then replace this comment with:
+![Review detail with owner actions](mockups/review-detail.png) -->
+
+Original wireframe:
+
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │  NAV                                                                 │
@@ -280,6 +285,11 @@ Original wireframe:
 
 ### 4.8 Review Form (`/reviews/new?recipeId=…`, `/reviews/:id/edit`)
 
+<!-- TODO: save a 1280px-wide light-mode screenshot as docs/mockups/review-form.png, then replace this comment with:
+![Review form (logged in)](mockups/review-form.png) -->
+
+Original wireframe:
+
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │  NAV                                                                 │
@@ -322,18 +332,18 @@ Original wireframe:
 
 ```
  Browser (React SPA)                     Node + Express                MongoDB Atlas
-┌──────────────────────┐   fetch()   ┌──────────────────────┐      ┌────────────────┐
-│ React Router pages   │ ──────────▶ │ /api/auth   (Passport)│ ───▶ │ users          │
-│ components + hooks   │ ◀────────── │ /api/recipes          │ ───▶ │ recipes        │
-│                      │   JSON      │ /api/reviews          │ ───▶ │ reviews        │
-└──────────────────────┘             │ static: frontend/dist │      └────────────────┘
-                                     └──────────────────────┘
+┌──────────────────────┐   fetch()   ┌───────────────────────┐      ┌────────────────┐
+│ React Router pages   │ ──────────▶ │ /api/auth   (Passport) │ ───▶ │ users          │
+│ components + hooks   │ ◀────────── │ /api/recipes           │ ───▶ │ recipes        │
+│                      │   JSON      │ /api/reviews           │ ───▶ │ reviews        │
+└──────────────────────┘             │ static: frontend/dist  │ ───▶ │ sessions       │
+                                     └───────────────────────┘      └────────────────┘
 ```
 
-- **Single origin, no CORS.** In development the Vite dev server proxies `/api` to Express. In production Express serves the built React app from `frontend/dist`, so the frontend and API share one origin and the `cors` package is never needed.
-- **Authentication.** Passport local strategy + `express-session`. Passwords are hashed with `bcryptjs`. Session cookies are `httpOnly`.
-- **Authorization.** Middleware `requireAuth` rejects unauthenticated writes with `401`. Update and delete handlers check `doc.authorId === req.user._id` and return `403` otherwise.
-- **Database access.** The native MongoDB driver only, with one module per collection under `backend/db/`.
+- **Single origin, no CORS.** In development the Vite dev server proxies `/api` to Express. In production Express serves the built React app from `frontend/dist`, and any non-API path returns `index.html` so React Router handles it (a refresh on `/reviews/123` works). The frontend and API share one origin, so the `cors` package is never needed. Unknown `/api` paths return a JSON 404.
+- **Authentication.** Passport local strategy + `express-session`, with sessions stored in MongoDB by `connect-mongo` so a server restart doesn't log anyone out. Passwords are hashed with `bcryptjs`. Session cookies are `httpOnly`, `sameSite: lax`, and `secure` in production; Express trusts Render's proxy in production so the secure cookie is set behind HTTPS.
+- **Authorization.** A `requireAuth` middleware rejects unauthenticated writes with `401`. Update and delete handlers compare the document's owner to `req.user._id` (`ownerId` on recipes, `authorId` on reviews) and return `403` otherwise.
+- **Database access.** The native MongoDB driver only, with one module per collection under `backend/db/`. Configuration comes from environment variables (`MONGO_URI`, `DB_NAME`, `SESSION_SECRET`, `PORT`, `NODE_ENV`), loaded from `backend/.env` in development via `dotenv`.
 
 ---
 
@@ -341,87 +351,93 @@ Original wireframe:
 
 ### `users`
 
-| Field          | Type     | Notes                   |
-| -------------- | -------- | ----------------------- |
-| `_id`          | ObjectId |                         |
-| `username`     | string   | unique index            |
-| `passwordHash` | string   | bcrypt hash, never sent |
-| `createdAt`    | Date     |                         |
+| Field          | Type     | Notes                                                  |
+| -------------- | -------- | ------------------------------------------------------ |
+| `_id`          | ObjectId |                                                        |
+| `username`     | string   | unique index                                           |
+| `passwordHash` | string   | bcrypt hash, never sent to the client                  |
+| `seeded`       | boolean  | only on seed users, so re-seeding leaves real accounts |
+| `createdAt`    | Date     |                                                        |
 
 ### `recipes` (Jerith)
 
-| Field             | Type     | Notes                                                         |
-| ----------------- | -------- | ------------------------------------------------------------- |
-| `_id`             | ObjectId |                                                               |
-| `title`           | string   | required, text index                                          |
-| `description`     | string   | text index                                                    |
-| `ingredients`     | string[] |                                                               |
-| `steps`           | string[] |                                                               |
-| `equipment`       | string[] | subset of `microwave`, `hot-plate`, `mini-fridge`, `no-cook` |
-| `prepTimeMinutes` | number   | indexed                                                       |
-| `costUSD`         | number   | indexed                                                       |
-| `authorId`        | ObjectId | ref `users._id`                                               |
-| `authorName`      | string   | denormalized for display                                      |
-| `createdAt`       | Date     |                                                               |
-| `updatedAt`       | Date     | shown as "last updated"                                       |
+| Field         | Type         | Notes                                                       |
+| ------------- | ------------ | ----------------------------------------------------------- |
+| `_id`         | ObjectId     |                                                             |
+| `title`       | string       | required; keyword search matches title or ingredients       |
+| `equipment`   | string       | one of `microwave`, `hot-plate`, `mini-fridge`, `no-cook`   |
+| `prepTime`    | number       | minutes, positive                                           |
+| `cost`        | number\|null | estimated USD, non-negative; `null` when not listed         |
+| `ingredients` | string[]     | non-empty                                                   |
+| `steps`       | string[]     | non-empty                                                   |
+| `ownerId`     | ObjectId     | ref `users._id`; the owner's username is joined at read time |
+| `createdAt`   | Date         |                                                             |
+| `updatedAt`   | Date         | shown as "last updated"                                     |
 
 ### `reviews` (Julian)
 
-| Field           | Type     | Notes                                       |
-| --------------- | -------- | ------------------------------------------- |
-| `_id`           | ObjectId |                                             |
-| `recipeId`      | ObjectId | ref `recipes._id`, indexed                  |
-| `recipeTitle`   | string   | denormalized for list display and search    |
-| `rating`        | number   | integer 1–5, indexed                        |
-| `comment`       | string   |                                             |
-| `equipmentUsed` | string[] | same enum as `recipes.equipment`            |
-| `authorId`      | ObjectId | ref `users._id`                             |
-| `authorName`    | string   | denormalized for display                    |
-| `createdAt`     | Date     |                                             |
-| `updatedAt`     | Date     |                                             |
+| Field           | Type     | Notes                                                       |
+| --------------- | -------- | ----------------------------------------------------------- |
+| `_id`           | ObjectId |                                                             |
+| `recipeId`      | ObjectId | ref `recipes._id`; indexed with `createdAt`                 |
+| `recipeTitle`   | string   | denormalized so lists, search, and removed recipes show it  |
+| `rating`        | number   | integer 1–5, indexed                                        |
+| `comment`       | string   | required, up to 2,000 characters                            |
+| `equipmentUsed` | string[] | one or more of the recipe equipment values                  |
+| `authorId`      | ObjectId | ref `users._id`, indexed                                    |
+| `authorName`    | string   | denormalized for display                                    |
+| `createdAt`     | Date     | indexed                                                     |
+| `updatedAt`     | Date     | equals `createdAt` until the review is edited               |
+
+### `sessions`
+
+Managed by `connect-mongo` for `express-session`; not accessed directly by app code.
 
 ### Synthetic data
 
-Each seed script generates at least 1,000 records by itself, so each section meets the requirement independently:
+Each seed script generates well over 1,000 records by itself, so each section meets the requirement independently:
 
-- `backend/seed/seedRecipes.js`: about 1,000 recipes built from templates (base dish × method × equipment), with realistic prep times (2–30 min) and costs ($0.75–$8).
-- `backend/seed/seedReviews.js`: about 3,000 reviews spread across seeded recipes. Each review's `equipmentUsed` mostly matches the recipe's equipment. Ratings are skewed realistically, with occasional mismatched-equipment reviews that score lower.
-- Seed users have a shared demo password, documented in the README.
+- `backend/seed.js` (`npm run seed`): 8 seed users sharing the demo password `seed-password-123`, and 1,200 recipes built from dish templates and variations, spread evenly across the four equipment types. Prep times range from 5 to 45 minutes and costs from $1 to $15, with about 15% of recipes having no listed cost. Creation dates are spread over the past 180 days. Re-running it replaces only seed users and their recipes.
+- `backend/seedReviews.js` (`npm run seed:reviews`, run after `seed`): 3,000 reviews spread across the recipes and users in the database. About 85% use the recipe's own equipment; the rest used something else and skew to low ratings. Ratings otherwise skew positive, and about 20% show as edited. Re-running it replaces all reviews.
 
 ---
 
 ## 7. REST API
 
-All responses are JSON. 🔒 = login required. 👤 = owner only.
+All responses are JSON. 🔒 = login required (`401` otherwise). 👤 = owner only (`403` otherwise).
 
 ### Auth (Jerith)
 
-| Method | Path                 | Description                 |
-| ------ | -------------------- | --------------------------- |
-| POST   | `/api/auth/register` | Create account, log in      |
-| POST   | `/api/auth/login`    | Passport local login        |
-| POST   | `/api/auth/logout`   | End session                 |
-| GET    | `/api/auth/me`       | Current user or `null`      |
+| Method | Path                 | Description                                                                       |
+| ------ | -------------------- | --------------------------------------------------------------------------------- |
+| POST   | `/api/auth/register` | Create an account (password at least 8 characters) and log in. `409` if taken.    |
+| POST   | `/api/auth/login`    | Passport local login. `401` on a wrong username or password.                      |
+| POST   | `/api/auth/logout`   | End the session                                                                   |
+| GET    | `/api/auth/me`       | Current user `{ id, username, createdAt }`, or `401` when logged out              |
 
 ### Recipes (Jerith)
 
-| Method | Path               | Description                                                                         |
-| ------ | ------------------ | ----------------------------------------------------------------------------------- |
-| GET    | `/api/recipes`     | List. Query: `q`, `equipment` (comma list), `maxTime`, `maxCost`, `page`, `limit`, `sort` |
-| GET    | `/api/recipes/:id` | One recipe                                                                          |
-| POST   | `/api/recipes`     | 🔒 Create                                                                           |
-| PUT    | `/api/recipes/:id` | 🔒👤 Update                                                                         |
-| DELETE | `/api/recipes/:id` | 🔒👤 Delete                                                                         |
+| Method | Path               | Description                                                                                                                                                            |
+| ------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/recipes`     | List. Query: `keyword` (title or ingredients), `equipment` (one value), `maxPrepTime`, `maxCost`, `page`, `limit` (default 20, max 100), `sort` (`newest`, `cheapest`, `fastest`). Returns `{ recipes, totalCount, page, limit, totalPages }`. |
+| GET    | `/api/recipes/:id` | One recipe, including `ownerUsername`                                                                                                                                  |
+| POST   | `/api/recipes`     | 🔒 Create                                                                                                                                                              |
+| PUT    | `/api/recipes/:id` | 🔒👤 Update                                                                                                                                                            |
+| DELETE | `/api/recipes/:id` | 🔒👤 Delete                                                                                                                                                            |
+
+Recipe validation errors return `400 { error, details: [messages] }`. Recipes are returned with string ids as `id`.
 
 ### Reviews (Julian)
 
-| Method | Path               | Description                                                                                |
-| ------ | ------------------ | ------------------------------------------------------------------------------------------ |
-| GET    | `/api/reviews`     | List. Query: `recipeId`, `q` (recipe title), `equipment`, `minRating`, `page`, `limit`, `sort` |
-| GET    | `/api/reviews/:id` | One review                                                                                 |
-| POST   | `/api/reviews`     | 🔒 Create (body includes `recipeId`, which must exist)                                     |
-| PUT    | `/api/reviews/:id` | 🔒👤 Update                                                                                |
-| DELETE | `/api/reviews/:id` | 🔒👤 Delete                                                                                |
+| Method | Path               | Description                                                                                                                                                                          |
+| ------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/api/reviews`     | List. Query: `recipeId`, `q` (recipe title), `equipment` (comma list), `minRating`, `page`, `limit` (default 10, max 50), `sort` (`newest`, `oldest`, `highest`, `lowest`). Returns `{ reviews, total, page, totalPages, averageRating }`, where `averageRating` covers every matching review. |
+| GET    | `/api/reviews/:id` | One review, plus `recipeExists`                                                                                                                                                      |
+| POST   | `/api/reviews`     | 🔒 Create (body includes `recipeId`, which must exist)                                                                                                                               |
+| PUT    | `/api/reviews/:id` | 🔒👤 Update `rating`, `comment`, `equipmentUsed`                                                                                                                                     |
+| DELETE | `/api/reviews/:id` | 🔒👤 Delete                                                                                                                                                                          |
+
+Review validation errors return `400 { error, errors: { field: message } }` so the form can show each message next to its field. Reviews are returned as stored, with `_id`.
 
 Recipe deletion behavior: reviews of a deleted recipe stay readable, and the review detail page shows "This recipe has been removed."
 
@@ -434,26 +450,30 @@ Each component is in its own file with a CSS file of the same name, imported by 
 | Route                 | Page component       | Owner  |
 | --------------------- | -------------------- | ------ |
 | `/`                   | `HomePage`           | Julian |
-| `/recipes`            | `RecipesPage`        | Jerith |
-| `/recipes/new`        | `RecipeFormPage`     | Jerith |
-| `/recipes/:id`        | `RecipeDetailPage`   | Jerith |
-| `/recipes/:id/edit`   | `RecipeFormPage`     | Jerith |
+| `/recipes`            | `RecipeList`         | Jerith |
+| `/recipes/new`        | `RecipeForm` 🔒      | Jerith |
+| `/recipes/:id`        | `RecipeDetail`       | Jerith |
+| `/recipes/:id/edit`   | `RecipeForm` 🔒      | Jerith |
 | `/reviews`            | `ReviewsPage`        | Julian |
-| `/reviews/new`        | `ReviewFormPage`     | Julian |
+| `/reviews/new`        | `ReviewFormPage` 🔒  | Julian |
 | `/reviews/:id`        | `ReviewDetailPage`   | Julian |
-| `/reviews/:id/edit`   | `ReviewFormPage`     | Julian |
-| `/login`, `/register` | `LoginPage`, `RegisterPage` | Jerith |
+| `/reviews/:id/edit`   | `ReviewFormPage` 🔒  | Julian |
+| `/login`, `/register` | `Login`, `Register`  | Jerith |
+| anything else         | `NotFound`           | Jerith |
 
-**Shared (Julian):** `NavBar`, `Layout`, `Pagination`, `EquipmentBadge`
-**Shared (Jerith):** `AuthContext` / `useAuth` hook
-**Recipes (Jerith):** `RecipeFilters`, `RecipeList`, `RecipeCard`, `RecipeForm`
-**Reviews (Julian):** `ReviewFilters`, `ReviewList`, `ReviewCard`, `ReviewForm`, `StarRating`, `RecipeReviews` (embedded on recipe detail)
+🔒 routes are wrapped in `RequireAuth`, which sends logged-out users to `/login` and back to the original page afterwards.
+
+**Shared (Julian):** `NavBar`, `Layout`, `Pagination`, `EquipmentBadge`, `StarRating`, `utils/format.js`, `utils/query.js`
+**Shared (Jerith):** `AuthContext` / `useAuth`, `api.js` (fetch wrapper), `RequireAuth`, `AuthForm`
+**Reviews (Julian):** `ReviewFilters`, `ReviewList`, `ReviewCard`, `ReviewForm`, `RecipeReviews` (embedded on recipe detail)
+
+The recipe and review list pages keep their filters, sort, and page in the URL, so filtered views can be bookmarked and the back button works.
 
 ### Accessibility and HTML
 
 - Real `<button>`, `<a>`/`<Link>`, `<form>`, `<label>`, `<input>`, `<select>`, and `<fieldset>` elements. No clickable `div`s or `span`s.
 - Star ratings in forms are a radio group in a `<fieldset>` with a `<legend>`.
-- Visible focus states and color contrast that meets WCAG AA.
+- Visible focus states, a skip-to-content link, and color contrast that meets WCAG AA.
 
 ---
 
@@ -476,8 +496,8 @@ Each component is in its own file with a CSS file of the same name, imported by 
 
 ## 10. Tech Stack and Approved Libraries
 
-- **Frontend:** React (Hooks), React Router (`react-router-dom`), `prop-types`, Fetch API, CSS, built with Vite
-- **Backend:** Node.js, Express, `passport`, `passport-local`, `express-session`, `bcryptjs`, `mongodb` (native driver)
-- **Tooling:** ESLint, Prettier
+- **Frontend:** React 19 (Hooks), React Router 7 (`react-router-dom`), `prop-types`, Fetch API, CSS, built with Vite
+- **Backend:** Node.js, Express 5, `passport`, `passport-local`, `express-session`, `connect-mongo`, `bcryptjs`, `dotenv`, `mongodb` (native driver)
+- **Tooling:** ESLint, Prettier, nodemon
 - **Not used:** axios, Mongoose, `cors`
-- **Deployment:** Render (Express serves the API and the built frontend), MongoDB Atlas
+- **Deployment:** Render web service (Express serves the API and the built frontend), MongoDB Atlas
