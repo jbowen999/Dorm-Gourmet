@@ -11,13 +11,13 @@ Recipes for dorm-kitchen cooking: a microwave, a hot plate, a mini-fridge, or no
 
 ## Class
 
-[CS5610 Web Development, Northeastern University](https://northeastern.instructure.com/courses/261032), taught by Prof. John Alexis Guerra Gómez
+[CS5610 Web Development, Northeastern University](https://johnguerra.co/classes/webDevelopment_online_fall_2026/index.html), taught by Prof. John Alexis Guerra Gómez
 
 ## Links
 
 - **Live site:** https://dorm-gourmet.onrender.com (free tier: the first visit after ~15 idle minutes can take up to a minute to load)
-- **Demo video:** TODO
-- **Slides:** TODO
+- **Demo video:** https://youtu.be/QllDfig_OeM
+- **Slides:** [Dorm Gourmet slides (SharePoint)](https://northeastern-my.sharepoint.com/:p:/g/personal/gurusubburam_j_northeastern_edu/IQB68RFMde3bTp7S_53ZtaDDAcSwcNj0WtK3a3zLhzCf9Cc?e=ZEorXE)
 - **Design document:** [docs/DESIGN.md](docs/DESIGN.md)
 
 ## Project Objective
